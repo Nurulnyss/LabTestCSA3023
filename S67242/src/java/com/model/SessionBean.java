@@ -1,29 +1,32 @@
 package com.model;
-public class SessionBean implements java.io.Serializable{
+
+import java.io.Serializable;
+
+public class SessionBean implements Serializable {
+
     private int session_id;
     private String student_name;
     private String branch_location;
     private String type;
     private String status;
-    
-    public SessionBean(){}
-    
-    public SessionBean(String student_name, String branch_location, String type, String status){
-        super();
+
+    public SessionBean() {
+    }
+
+    public SessionBean(String student_name, String branch_location, String type, String status) {
         this.student_name = student_name;
         this.branch_location = branch_location;
         this.type = type;
         this.status = status;
     }
-    
+
     public SessionBean(int session_id, String student_name, String branch_location, String type, String status) {
-        super();
         this.session_id = session_id;
         this.student_name = student_name;
         this.branch_location = branch_location;
         this.type = type;
         this.status = status;
-}
+    }
 
     public int getSession_id() {
         return session_id;
@@ -64,9 +67,4 @@ public class SessionBean implements java.io.Serializable{
     public void setStatus(String status) {
         this.status = status;
     }
-    
-
-    }
-
- 
-
+}

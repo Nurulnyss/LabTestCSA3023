@@ -9,12 +9,12 @@ import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
+@WebServlet({"/list", "/new", "/insert"})
 public class BookSessionServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -27,24 +27,20 @@ public class BookSessionServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         doGet(request, response);
     }
 
     @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String action = request.getServletPath();
 
         try {
-
             switch (action) {
-
                 case "/new":
                     showNewForm(request, response);
                     break;
@@ -53,75 +49,46 @@ public class BookSessionServlet extends HttpServlet {
                     insertSession(request, response);
                     break;
 
+                case "/list":
                 default:
                     listSessions(request, response);
                     break;
             }
-
         } catch (SQLException e) {
             throw new ServletException(e);
         }
     }
 
-    // =========================
-    // SHOW FORM
-    // =========================
-    private void showNewForm(HttpServletRequest request,
-                             HttpServletResponse response)
+    private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        RequestDispatcher dispatcher =
-                request.getRequestDispatcher("session-form.jsp");
-
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/session-form.jsp");
         dispatcher.forward(request, response);
     }
 
-    // =========================
-    // INSERT SESSION
-    // =========================
-    private void insertSession(HttpServletRequest request,
-                               HttpServletResponse response)
+    private void insertSession(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
 
-        String studentName =
-                request.getParameter("studentName");
+        String studentName = request.getParameter("studentName");
+        String branchLocation = request.getParameter("branchLocation");
+        String type = request.getParameter("type");
+        String status = request.getParameter("status");
 
-        String branchLocation =
-                request.getParameter("branchLocation");
+        SessionBean session = new SessionBean(studentName, branchLocation, type, status);
 
-        String type =
-                request.getParameter("type");
+        sessionDAO.insertSession(session);
 
-        String status =
-                request.getParameter("status");
-
-        SessionBean session = new SessionBean();
-
-        session.setStudent_name(studentName);
-        session.setBranch_location(branchLocation);
-        session.setType(type);
-        session.setStatus(status);
-
-        sessionDAO.insertSessionBean(session);
-
-        response.sendRedirect("list");
+        response.sendRedirect(request.getContextPath() + "/list");
     }
 
-    // =========================
-    // DISPLAY ALL SESSIONS
-    // =========================
-    private void listSessions(HttpServletRequest request,
-                              HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+    private void listSessions(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        List<SessionBean> listSession =
-                sessionDAO.selectAllTrainingSessions();
+        List<SessionBean> listSession = sessionDAO.selectAllSessions();
 
         request.setAttribute("listSession", listSession);
 
-        RequestDispatcher dispatcher =
-                request.getRequestDispatcher("schedule.jsp");
-
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/schedule.jsp");
         dispatcher.forward(request, response);
     }
 }
